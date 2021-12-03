@@ -1,0 +1,10 @@
+
+Code Structure - Flow Chart
+
+- The **outputResponse()** function will simply return as JSON, the response object that will be built up. All the details are put inside the 'stockData' field of the response object, as shown in the example.
+- The **findOrUpdateStock()** method will update the stock document with the name of **stockName** to add likes if a **documentUpdate** object is provided, and pass along the found document to the next step.
+- The **likeStock()** function will check if the request IP address has liked the stock before, if not, it then sets up a document update object, which is used to then call **findOrUpdateStock()**.
+- The **getPrice()** function will take in a **stockDocument** and fetch the latest price of the stock using another API, add the price to the stock document and then pass this along to the next step.
+- The **processOneStock()** function will add in stock details to the 'stockData' field when one stock is requested
+- The **processTwoStocks()** function will add in stock details to toe 'stockData' field when two stocks are requested
+- The **twoStocks** boolean is used to track if we are dealing with two stocks or not. It is defaulted to false. If **req.query.stock** is an array, this means we had two stocks and we will set this to true
