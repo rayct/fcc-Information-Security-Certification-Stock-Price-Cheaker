@@ -5,7 +5,7 @@ let mongodb = require('mongodb')
 let mongoose = require('mongoose')
 let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 
-module.exports = function(app) {
+module.exports = function (app) {
 
   // 1. Database Connection
   let uri = 'mongodb+srv://rayct:' + process.env.PWD + '@cluster0.kpipn.mongodb.net/stock_price_checker?retryWrites=true&w=majority'
@@ -31,7 +31,7 @@ module.exports = function(app) {
 
 
   app.route('/api/stock-prices')
-    .get(function(req, res) {
+    .get(function (req, res) {
 
       let responseObject = {}
       responseObject['stockData'] = {}
@@ -44,19 +44,8 @@ module.exports = function(app) {
         return res.json(responseObject)
       }
 
-      /* Process Input */
-      if (typeof (req.query.stock) === 'string') {
-        /* One Stock */
-        let stockName = req.query.stock
-
-        let documentUpdate = {}
-        findOrUpdateStock(stockName, documentUpdate, getPrice)
-
-      }
-
       /* Find/Update Stock Document */
-      let findOrUpdateStock = (stockName, documentUpdate, nextStep) => {
-      }
+      let findOrUpdateStock = (stockName, documentUpdate, nextStep) => {}
 
       /* Like Stock */
       let likeStock = (stockName, nextStep) => {
@@ -65,7 +54,7 @@ module.exports = function(app) {
 
       /* Get Price */
       let getPrice = (stockDocument, nextStep) => {
-        // nextStep(stockDocument, outputResponse)
+        nextStep(stockDocument, outputResponse)
       }
 
       /* Build Response for 1 Stock */
@@ -78,9 +67,14 @@ module.exports = function(app) {
       let processTwoStocks = (stockDocument, nextStep) => {
 
       }
-      /* Process Input*/
+      /* Process Input */
       if (typeof (req.query.stock) === 'string') {
         /* One Stock */
+        let stockName = req.query.stock
+
+        let documentUpdate = {}
+        findOrUpdateStock(stockName, documentUpdate, getPrice)
+
 
 
       } else if (Array.isArray(req.query.stock)) {
@@ -90,13 +84,9 @@ module.exports = function(app) {
 
         /* Stock 2 */
 
-
       }
 
-      app.route('/api/stock-prices')
-        .get(function(req, res) {
 
-        });
 
-    })
+    });
 };
