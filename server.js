@@ -7,6 +7,9 @@ const cors = require('cors');
 const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
+
+
+// Test 1 - Set the content security policies to only allow loading of scripts and CSS from your server.
 let helmet = require('helmet');
 
 const app = express();
@@ -21,6 +24,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+
+// Test 1 - Content Security Policy
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'"]
+  }
+}))
 
 //Index page (static HTML)
 app.route('/')

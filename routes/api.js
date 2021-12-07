@@ -1,10 +1,13 @@
+// API routing
+
 'use strict';
 let mongodb = require('mongodb')
 let mongoose = require('mongoose')
 let XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest
 
-module.exports = function (app) {
+module.exports = function(app) {
 
+  // 1. Database Connection
   let uri = 'mongodb+srv://rayct:' + process.env.PWD + '@cluster0.kpipn.mongodb.net/stock_price_checker?retryWrites=true&w=majority'
 
   mongoose.connect(uri, {
@@ -12,6 +15,7 @@ module.exports = function (app) {
     useUnifiedTopology: true
   })
 
+  // 2. Creating the Model and Schema
   let stockSchema = new mongoose.Schema({
     name: {
       type: String,
@@ -23,11 +27,11 @@ module.exports = function (app) {
     },
     ips: [String]
   })
-  let stock = mongoose.model('stock', stockSchema)
+  let Stock = mongoose.model('Stock', stockSchema)
 
 
   app.route('/api/stock-prices')
-    .get(function (req, res) {
+    .get(function(req, res) {
 
       let responseObject = {}
       responseObject['stockData'] = {}
@@ -40,79 +44,59 @@ module.exports = function (app) {
         return res.json(responseObject)
       }
 
+      /* Process Input */
+      if (typeof (req.query.stock) === 'string') {
+        /* One Stock */
+        let stockName = req.query.stock
+
+        let documentUpdate = {}
+        findOrUpdateStock(stockName, documentUpdate, getPrice)
+
+      }
+
       /* Find/Update Stock Document */
       let findOrUpdateStock = (stockName, documentUpdate, nextStep) => {
-        Stock.findOneAndUpdate({
-            name: stockName
-          },
-          documentUpdate, {
-            new: true,
-            upsert: true
-          },
-          (error, stockDocument) => {
-            if (error) {
-              console.log(error)
-            } else if (!error && stockDocument) {
-              if (twoStocks === false) {
-                return nextStep(stockDocument, processOneStock)
-              }
-            }
-          }
-        )
       }
 
       /* Like Stock */
       let likeStock = (stockName, nextStep) => {
-        nextStep(stockDocument, outputResponse)
+
       }
 
       /* Get Price */
       let getPrice = (stockDocument, nextStep) => {
-        let xhr = new XMLHttpRequest()
-        let requestUrl = 'https://stock-price-checker-proxy--freecodecamp.repl.co/v1/stock/' + stockDocument['name'] + '/quote'
-        xhr.open('GET', requestUrl, true)
-        xhr.onload = () => {
-          let apiResponse = JSON.parse(xhr.responseText)
-          stockDocument['price'] = apiResponse['latestPrice'].toFixed(2)
-          nextStep(stockDocument, outputResponse)
-        }
-        xhr.send()
-
+        // nextStep(stockDocument, outputResponse)
       }
 
       /* Build Response for 1 Stock */
       let processOneStock = (stockDocument, nextStep) => {
-        responseObject['stockData']['stock'] = stockDocument['name']
-        nextStep()
+
       }
 
       let stocks = []
       /* Build Response for 2 Stocks */
       let processTwoStocks = (stockDocument, nextStep) => {
-        responseObject['stockData']['stock'] = stockDocument['name']
-        responseObject['stockData']['price'] = stockDocument['price']
-        responseObject['stockData']['likes'] = stockDocument['likes']
-      }
 
+      }
       /* Process Input*/
       if (typeof (req.query.stock) === 'string') {
         /* One Stock */
-        let stockName = req.query.stock
-        let documentUpdate = {}
-        findOrUpdateStock(stockName, documentUpdate, getPrice)
+
 
       } else if (Array.isArray(req.query.stock)) {
         twoStocks = true
         /* Stock 1 */
 
+
         /* Stock 2 */
 
+
       }
-    });
 
-  app.route('/api/stock-prices')
-    .get(function (req, res) {
+      app.route('/api/stock-prices')
+        .get(function(req, res) {
 
-    });
+        });
 
+    })
 };
