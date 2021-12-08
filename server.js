@@ -7,6 +7,7 @@ const cors = require('cors');
 const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
+require("./db-connection");
 
 
 // Test 1 - Set the content security policies to only allow loading of scripts and CSS from your server.
